@@ -3,3 +3,4 @@
 - SELECT * FROM paganti WHERE ospite_id IS NOT NULL
 - SELECT * FROM stanze WHERE floor= '1'
 - SELECT * FROM ospiti WHERE ospiti.name LIKE 'E%'
+- SELECT * FROM ospiti WHERE (YEAR(CURRENT_DATE)-(date_of_birth)) <30
