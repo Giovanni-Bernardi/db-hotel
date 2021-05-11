@@ -4,3 +4,4 @@
 - SELECT * FROM stanze WHERE floor= '1'
 - SELECT * FROM ospiti WHERE ospiti.name LIKE 'E%'
 - SELECT * FROM ospiti WHERE (YEAR(CURRENT_DATE)-(date_of_birth)) <30
+- SELECT *FROM prenotazioni WHERE created_at < "2018-05"
