@@ -1,0 +1,5 @@
+- SELECT * FROM ospiti 
+- SELECT * FROM ospiti WHERE document_type= CI
+- SELECT * FROM paganti WHERE ospite_id IS NOT NULL
+- SELECT * FROM stanze WHERE floor= '1'
+- SELECT * FROM ospiti WHERE ospiti.name LIKE 'E%'
