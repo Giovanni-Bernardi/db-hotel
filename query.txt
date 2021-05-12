@@ -1,7 +1,101 @@
-- SELECT * FROM ospiti 
-- SELECT * FROM ospiti WHERE document_type= CI
-- SELECT * FROM paganti WHERE ospite_id IS NOT NULL
-- SELECT * FROM stanze WHERE floor= '1'
-- SELECT * FROM ospiti WHERE ospiti.name LIKE 'E%'
-- SELECT * FROM ospiti WHERE (YEAR(CURRENT_DATE)-(date_of_birth)) <30
-- SELECT *FROM prenotazioni WHERE created_at < "2018-05"
+PART 1
+●Selezionare tutti gli ospiti
+    SELECT * FROM ospiti
+
+PART 1
+●Selezionare tutti gli ospiti con document type = a CI
+    SELECT * FROM ospiti WHERE document_type= CI
+
+●Selezionare i paganti che abbiano un ospite id associato
+    SELECT * FROM paganti WHERE ospite_id IS NOT NULL
+
+●Selezionare tutte le stanze del primo piano
+    SELECT * FROM stanze WHERE floor= '1'
+
+●Selezionare tutti gli ospiti che iniziano per E
+    SELECT * FROM ospiti WHERE ospiti.name LIKE 'E%'
+
+●Selezionare tutti gli ospiti che abbiano meno di 30 anni
+    SELECT * FROM ospiti WHERE (YEAR(CURRENT_DATE)-(date_of_birth)) <30
+
+ ●Seleziona tutte le prenotazioni precedenti a maggio 2018
+    SELECT * FROM prenotazioni WHERE created_at < "2018-05"
+
+
+PART 2
+●Come si chiamano gli ospiti che hanno fatto più di due prenotazioni
+    SELECT ospiti.name, ospiti.lastname, prenotazioni_has_ospiti.ospite_id FROM ospiti 
+    JOIN prenotazioni_has_ospiti ON ospiti.id = prenotazioni_has_ospiti.ospite_id JOIN prenotazioni 
+    ON prenotazioni_has_ospiti.prenotazione_id = prenotazioni.id 
+    GROUP BY prenotazioni_has_ospiti.ospite_id 
+    HAVING COUNT(prenotazioni_has_ospiti.ospite_id) > 2
+
+●Stampare gli ospiti per ogni prenotazione
+    SELECT prenotazioni_has_ospiti.prenotazione_id, ospiti.name AS nome_ospite, ospiti.lastname AS cognome_ospite
+    FROM ospiti
+    JOIN prenotazioni_has_ospiti
+    ON ospiti.id = prenotazioni_has_ospiti.ospite_id
+    JOIN prenotazioni
+    ON prenotazioni_has_ospiti.prenotazione_id = prenotazioni.id
+
+●Stampare Nome, Cognome, Prezzo e Pagante per tutte le prenotazioni fatte a Maggio 2018
+    SELECT prenotazioni.id, ospiti.id AS ID_Ospite, ospiti.name AS Nome_Ospiti, ospiti.lastname AS Cognome_Ospite, paganti.id AS ID_Pagante, paganti.name AS Nome_Pagante, 
+    paganti.lastname AS Cognome_pagante, pagamenti.price,prenotazioni.created_at
+    FROM ospiti 
+    JOIN prenotazioni_has_ospiti 
+    ON ospiti.id = prenotazioni_has_ospiti.ospite_id 
+    JOIN prenotazioni 
+    ON prenotazioni_has_ospiti.prenotazione_id = prenotazioni.id 
+    JOIN pagamenti 
+    ON prenotazioni.id = pagamenti.prenotazione_id 
+    JOIN paganti 
+    ON pagamenti.pagante_id = paganti.id
+    WHERE prenotazioni.created_at > '2018-05' AND prenotazioni.created_at < '2018-06' //non funziona se metto = '2018-05'
+
+●Fai la somma di tutti i prezzi delle prenotazioni per le stanze del primo pianoPrendi i dati di fatturazione per le prenotazioni con id=7
+    SELECT SUM(pagamenti.price)
+    FROM prenotazioni
+    JOIN stanze
+    ON prenotazioni.stanza_id = stanze.id
+    JOIN pagamenti
+    ON prenotazioni.id = pagamenti.prenotazione_id
+    WHERE stanze.floor = 1
+
+●Le stanze sono state prenotate almeno una volta? (visualizza le stanze non ancora prenotate)
+    SELECT stanze.id, stanze.room_number, stanze.floor, stanze.beds
+    FROM prenotazioni
+    RIGHT JOIN stanze
+    ON prenotazioni.stanza_id = stanze.id
+    WHERE prenotazioni.stanza_id IS NULL
+
+●Conta gli ospiti raggruppandoli per anno di nascita
+    SELECT YEAR(date_of_birth), 
+    COUNT(*) FROM ospiti 
+    GROUP BY YEAR(date_of_birth);
+
+●Somma i prezzi del pagamento raggruppandoli oer status
+    SELECT status, 
+    SUM(price) 
+    FROM pagamenti GROUP BY status;
+
+●Conta quante volte è stata prenotata ogni stanza
+    ELECT stanza_id, 
+    COUNT(*) FROM prenotazioni 
+    GROUP BY stanza_id;
+
+●Fai un'analisi per vedere se ci sono ore in cui le prenoptazioni sono più frequenti
+    SELECT HOUR(created_at), 
+    COUNT(*) FROM prenotazioni 
+    GROUP BY HOUR(created_at) ORDER BY COUNT(*) DESC;
+
+●Quante prenotazioni ha fatto l'ospite che ha fatto più prenotazioni?
+    SELECT ospiti.name, ospiti.lastname, COUNT(*)
+    FROM prenotazioni_has_ospiti
+    JOIN ospiti
+    ON prenotazioni_has_ospiti.ospite_id = ospiti.id
+    GROUP BY ospite_id
+    HAVING COUNT(*) > 2
+
+
+
+
